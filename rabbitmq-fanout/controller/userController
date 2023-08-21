@@ -1,0 +1,45 @@
+const Producer = require("../rabbitmq/producer/producer.js");
+const producer = new Producer();
+const UserModel = require("../models/userModel");
+const { startSession } = require('mongoose')
+
+const signup = async (req, res, next) => {
+  const session = await UserModel.startSession();
+
+  try {
+    session.startTransaction();
+
+    const uuid = req.body.uuid;
+    const data = req.body.data;
+    const userobj = new UserModel({ uuid, password: data });
+
+    await userobj.save();
+
+    const message = {
+      id: uuid,
+      data: data,
+    };
+
+    await producer.createChannel();
+    await producer.channel.assertExchange('users', 'fanout', {
+      durable: true,
+    });
+
+   
+    await producer.channel.publish('users', '', Buffer.from(JSON.stringify(message)));
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return res.status(200).json({ message: 'User registered successfully' });
+  } catch (err) {
+    
+    await session.abortTransaction();
+    session.endSession();
+
+    console.log(err);
+    res.status(500).send(err);
+  }
+};
+
+module.exports = { signup };
