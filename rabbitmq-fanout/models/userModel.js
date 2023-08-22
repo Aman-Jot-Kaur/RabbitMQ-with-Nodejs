@@ -7,10 +7,11 @@ const userSchema=new mongoose.Schema({
         unique:true,
         required: [true, "uuid is required"]
     }, 
- data: {
-        type: Array,
-        required: [true, "data is required"]
-    },
-})
+    userinfo: {
+        email: { type: String,   required: [true, "email is required"] },
+        password: { type: String,   required: [true, "password is required"] },
+       
+      },
+  });
 const UserModel = mongoose.model("user", userSchema)
 module.exports = UserModel

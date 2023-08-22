@@ -1,0 +1,54 @@
+asyncapi: '2.6.0'
+id: 'urn:amanjot-asyncapi:user-creation-api:1.0.0'
+info:
+  title: user Creation API
+  version: 1.0.0
+  description: This service is in charge of creating users in catalog application
+
+servers:
+  development:
+    url: localhost:5672
+    description: Local RabbitMQ
+    protocol: amqp
+defaultContentType: application/json
+channels:
+  collections.users.user_created:
+    description: User created successfully.
+    publish:
+      message:
+        payload:
+          $ref: '#/components/schemas/UserCreationInfo'
+
+components:
+  schemas:
+    UserCreationInfo:
+      type: object
+      properties:
+        uuid:
+          type: string
+          format: uuid
+          description: Information Request identifier
+        fired_at:
+          type: string
+          format: date-time
+        User:
+          $ref: '#/components/schemas/UserSchema'
+    UserSchema:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        data:
+          type: object
+          properties:
+            email:
+              type: string
+            password:
+              type: string
+          required:
+            - email
+            - password
+      required:
+        - id
+        - data

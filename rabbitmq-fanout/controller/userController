@@ -5,13 +5,13 @@ const { startSession } = require('mongoose')
 
 const signup = async (req, res, next) => {
   const session = await UserModel.startSession();
-
+console.log(req.body)
   try {
     session.startTransaction();
 
     const uuid = req.body.uuid;
-    const data = req.body.data;
-    const userobj = new UserModel({ uuid, password: data });
+    const data = req.body.userinfo;
+    const userobj = new UserModel({ uuid, userinfo: data });
 
     await userobj.save();
 

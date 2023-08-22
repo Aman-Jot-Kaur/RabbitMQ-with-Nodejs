@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  backend:
+    build:
+      context: 'C:\Users\amanj\Desktop\RabbitMQ-with-Nodejs\rabbitmq-fanout' 
+      dockerfile: Dockerfile
+    ports:
+      - '8081:8080'  
+    container_name:  bank-creation-service-container
+    environment:
+      - WATCHPACK_POLLING=true
+    networks:
+      - rabbitmq-fanout  
+    volumes:
+      - './rabbitmq-fanout:/app'  
+      - 'mongoData:/data/db'  # Corrected volume definition
+
+  mongo:
+    image: mongo
+    ports:
+      - '27017:27017'
+    container_name: mongo-container
+    networks:
+      - rabbitmq-fanout
+    volumes:
+      - 'mongoData:/data/db'  # Corrected volume definition
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_ROOT_DATABASE=users
+
+networks:
+  rabbitmq-fanout:
+
+volumes:
+  mongoData:
