@@ -1,4 +1,4 @@
-const Producer = require("../rabbitmq/producer/producer.js");
+const Producer = require("../producer" );
 const producer = new Producer();
 const UserModel = require("../models/userModel");
 const { startSession } = require('mongoose')

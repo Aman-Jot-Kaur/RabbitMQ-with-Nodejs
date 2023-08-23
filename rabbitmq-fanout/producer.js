@@ -1,17 +1,19 @@
 const amqp = require("amqplib");
 const config = require("./config");
 
-//step 1 : Connect to the rabbitmq server
-//step 2 : Create a new channel on that connection
-//step 3 : Create the exchange
-//step 4 : Publish the message as fanout
+
+
+
 
 class Producer {
   channel;
 
   async createChannel() {
+    
+// Connect to the rabbitmq server
     const connection = await amqp.connect(config.rabbitMQ.url);
     this.channel = await connection.createChannel();
+    //Create a new channel on that connection
   }
 
   async publishMessage(routingKey, message) {
@@ -20,7 +22,7 @@ class Producer {
     }
 
     const exchangeName = config.rabbitMQ.exchangeName;
-    
+    // Create the exchange
   await channel.assertExchange(exchangeName, 'fanout', {
     durable:true,
   });
@@ -30,6 +32,7 @@ class Producer {
       message: message,
       dateTime: new Date(),
     };
+    //Publish the message as fanout
     await this.channel.publish(exchangeName, '', Buffer.from(JSON.stringify(logDetails)));
   
 
